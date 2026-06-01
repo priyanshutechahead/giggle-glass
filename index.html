@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GiggleGlass.exe | Classic Comedy Engine</title>
+    <meta name="description" content="A nostalgic Windows 95/98 themed Single Page App to fetch, filter, voice-speak, and bookmark jokes.">
+    
+    <!-- Link to retro Redmond Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Main Windows Container -->
+    <div class="app-container">
+        <main class="window win-outset" id="main-card">
+            
+            <!-- Classic Window Title Bar -->
+            <div class="title-bar" aria-hidden="true">
+                <div class="title-bar-text">
+                    <!-- 16-bit style Custom pixel smile SVG -->
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square" stroke-linejoin="miter">
+                        <circle cx="12" cy="12" r="10" fill="#ffff00" stroke="#000000"></circle>
+                        <path d="M8 15s1.5 2 4 2 4-2 4-2" stroke="#000000"></path>
+                        <line x1="9" y1="9" x2="9.01" y2="9" stroke="#000000"></line>
+                        <line x1="15" y1="9" x2="15.01" y2="9" stroke="#000000"></line>
+                    </svg>
+                    <span>GiggleGlass.exe - Comedy Engine</span>
+                </div>
+                <div class="title-bar-controls">
+                    <button class="title-bar-btn" aria-label="Minimize">_</button>
+                    <button class="title-bar-btn" aria-label="Maximize">⬜</button>
+                    <button class="title-bar-btn close" id="btn-header-close" aria-label="Close">X</button>
+                </div>
+            </div>
+
+            <!-- Windows Style Menu Bar -->
+            <nav class="menu-bar" aria-label="Main system menus">
+                <span class="menu-item" id="menu-file">File</span>
+                <span class="menu-item" id="menu-edit">Edit</span>
+                <span class="menu-item" id="menu-favorites">Bookmarks</span>
+                <span class="menu-item" id="menu-help" onclick="alert('GiggleGlass v3.0\nCreated using retro Redmond design assets.\nClick Giggle Me to fetch comedic lines!');">Help</span>
+            </nav>
+
+            <!-- Autoplay Progress Visual Bar (classic Win progress) -->
+            <div class="autoplay-indicator-container" id="autoplay-indicator-container">
+                <div class="autoplay-indicator" id="autoplay-indicator"></div>
+            </div>
+
+            <!-- Client area Grid (Toolbar + Canvas Area) -->
+            <div class="window-body">
+                <div class="window-grid">
+                    
+                    <!-- LEFT COLUMN: MS Paint Sidebar Toolbox -->
+                    <aside class="win-outset toolbox" aria-label="Category toolbox">
+                        <div class="toolbox-title">Tools</div>
+                        <div class="tools-grid">
+                            <!-- Tool Any: Selection Box -->
+                            <button class="tool-btn active" data-category="Any" title="Any Category">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="3,3"></rect></svg>
+                            </button>
+                            <!-- Tool Programming: Pencil -->
+                            <button class="tool-btn" data-category="Programming" title="Programming Jokes">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                            </button>
+                            <!-- Tool Misc: Spray Can -->
+                            <button class="tool-btn" data-category="Misc" title="Miscellaneous Jokes">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+                            </button>
+                            <!-- Tool Pun: Eraser -->
+                            <button class="tool-btn" data-category="Pun" title="Puns">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 20H7L3 16c-1-1-1-3 0-4l9-9c1-1 3-1 4 0l4 4c1 1 1 3 0 4L13 20"></path><line x1="22" y1="20" x2="11" y2="20"></line></svg>
+                            </button>
+                            <!-- Tool Spooky: Bomb -->
+                            <button class="tool-btn" data-category="Spooky" title="Spooky Jokes">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="13" r="7"></circle><path d="M16 8l4-4M18.5 2.5h3M21.5 3.5v3"></path></svg>
+                            </button>
+                            <!-- Tool Christmas: Paint Bucket -->
+                            <button class="tool-btn" data-category="Christmas" title="Christmas Jokes">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-5c-.5 1-2 3.4-4 5s-3 3.5-3 5.5a7 7 0 0 0 7 7z"></path></svg>
+                            </button>
+                        </div>
+                        
+                        <!-- Invisible Category Select to maintain JS logic -->
+                        <select id="select-category" style="display: none;" aria-hidden="true">
+                            <option value="Any" selected>Any</option>
+                            <option value="Programming">Programming</option>
+                            <option value="Misc">Misc</option>
+                            <option value="Pun">Pun</option>
+                            <option value="Spooky">Spooky</option>
+                            <option value="Christmas">Christmas</option>
+                        </select>
+                    </aside>
+
+                    <!-- RIGHT COLUMN: Main canvas and audio deck controls -->
+                    <div class="workspace">
+                        
+                        <!-- Main Drawing Canvas (Displays joke inside inset frame) -->
+                        <section class="canvas win-inset" id="joke-display" aria-live="polite">
+                            <!-- Welcome state -->
+                            <div id="joke-placeholder" class="joke-content" style="text-align: center; color: var(--win-shadow); font-size: 13px; font-weight: normal;">
+                                📁 C:\COMEDY\JOKES.TXT<br><br>
+                                Press the <strong>Giggle Me!</strong> button to initialize jokes.
+                            </div>
+                        </section>
+
+                        <!-- Windows Sound Recorder TTS Control Deck -->
+                        <section class="win-outset audio-deck" aria-label="Speech controller deck">
+                            <div class="deck-row">
+                                <!-- Wave Oscilloscope display screen -->
+                                <div class="oscilloscope-screen" id="soundwave-screen">
+                                    <div class="oscilloscope-line" id="soundwave"></div>
+                                </div>
+                                
+                                <!-- Length and time display -->
+                                <div style="display: flex; flex-direction: column; font-family: 'Courier New', monospace; font-weight: bold; width: 110px; font-size: 11px;">
+                                    <div>Position:</div>
+                                    <div id="audio-time-elapsed" style="color: #000080;">0.00 sec</div>
+                                    <div style="margin-top: 4px;">Length:</div>
+                                    <div id="audio-time-length">8.40 sec</div>
+                                </div>
+                            </div>
+
+                            <div class="deck-row" style="margin-top: 4px;">
+                                <!-- Sliding Seek Track -->
+                                <div class="deck-slider-container">
+                                    <div class="deck-slider-track" id="deck-track" aria-hidden="true">
+                                        <div class="deck-slider-thumb" id="deck-thumb"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Media player circular controls mapped to speech synthesiser -->
+                                <div class="deck-controls">
+                                    <!-- Rewind / Reset -->
+                                    <button class="btn-deck" id="btn-audio-rewind" title="Rewind Speech" aria-label="Rewind Speech">
+                                        ◀◀
+                                    </button>
+                                    <!-- Play/Pause (mapped to btn-speak) -->
+                                    <button class="btn-deck" id="btn-speak" title="Play Voice" aria-label="Play Speech" disabled>
+                                        ▶
+                                    </button>
+                                    <!-- Stop (mapped to window.speechSynthesis.cancel) -->
+                                    <button class="btn-deck" id="btn-audio-stop" title="Stop Voice" aria-label="Stop Speech">
+                                        ■
+                                    </button>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Config Option Tabs (General / Voice) -->
+                        <section class="tab-container" aria-label="Configuration settings">
+                            <div class="tab-headers" role="tablist">
+                                <div class="tab-header active" id="tab-general" role="tab" aria-selected="true" aria-controls="panel-general">Exclusions</div>
+                                <div class="tab-header" id="tab-voice" role="tab" aria-selected="false" aria-controls="panel-voice">Voice Settings</div>
+                            </div>
+                            
+                            <div class="tab-content-frame">
+                                <!-- GENERAL FILTERS PANEL -->
+                                <div id="panel-general" role="tabpanel" aria-labelledby="tab-general">
+                                    <div class="settings-grid">
+                                        <div class="setting-group">
+                                            <label for="input-search">Contain Keyword:</label>
+                                            <input type="text" id="input-search" class="win-input-text" placeholder="e.g. debug, windows..." autocomplete="off">
+                                        </div>
+                                        <div class="setting-group">
+                                            <label>Content Filter Exclusions:</label>
+                                            <div class="filter-tags-grid">
+                                                <label class="win-checkbox-label" title="Exclude Not Safe For Work jokes">
+                                                    <input type="checkbox" class="blacklist-flag" value="nsfw" checked>
+                                                    <span>NSFW</span>
+                                                </label>
+                                                <label class="win-checkbox-label" title="Exclude religious jokes">
+                                                    <input type="checkbox" class="blacklist-flag" value="religious" checked>
+                                                    <span>Religious</span>
+                                                </label>
+                                                <label class="win-checkbox-label" title="Exclude political jokes">
+                                                    <input type="checkbox" class="blacklist-flag" value="political" checked>
+                                                    <span>Political</span>
+                                                </label>
+                                                <label class="win-checkbox-label" title="Exclude racist jokes">
+                                                    <input type="checkbox" class="blacklist-flag" value="racist" checked>
+                                                    <span>Racist</span>
+                                                </label>
+                                                <label class="win-checkbox-label" title="Exclude sexist jokes">
+                                                    <input type="checkbox" class="blacklist-flag" value="sexist" checked>
+                                                    <span>Sexist</span>
+                                                </label>
+                                                <label class="win-checkbox-label" title="Exclude explicit jokes">
+                                                    <input type="checkbox" class="blacklist-flag" value="explicit" checked>
+                                                    <span>Explicit</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- VOICE ENGINE PANEL (Hidden by default) -->
+                                <div id="panel-voice" style="display: none;" role="tabpanel" aria-labelledby="tab-voice">
+                                    <div class="settings-grid">
+                                        <div class="setting-group">
+                                            <label for="select-voice">Voice Select:</label>
+                                            <select id="select-voice" class="win-select" aria-label="Voice choice selector">
+                                                <option value="default">Default System Voice</option>
+                                            </select>
+                                        </div>
+                                        <div class="setting-group">
+                                            <label for="voice-rate">Speaking Speed:</label>
+                                            <div class="range-container">
+                                                <span>Min</span>
+                                                <input type="range" id="voice-rate" min="0.5" max="2" step="0.1" value="1" aria-label="Voice speed rate slider">
+                                                <span>Max</span>
+                                                <span id="voice-rate-val" style="font-weight: bold; width: 30px; text-align: right;">1.0x</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- System Commands row -->
+                        <section class="control-row">
+                            <div class="control-left">
+                                <!-- Save favorites bookmark -->
+                                <button class="btn-sys" id="btn-favorite" title="Save Bookmark to Local Tray" aria-label="Bookmark joke" disabled>
+                                    <!-- Simple heart icon -->
+                                    <svg width="13" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" id="fav-icon"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                                    <span>Bookmark</span>
+                                </button>
+                                
+                                <!-- Copy / Share -->
+                                <button class="btn-sys" id="btn-share" title="Copy to Clipboard" aria-label="Share joke" disabled>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                                    <span>Share</span>
+                                </button>
+
+                                <!-- Autoplay (mapped to btn-toggle-autoplay) -->
+                                <button class="btn-sys" id="btn-toggle-autoplay" title="Toggle Loop Mode" aria-label="Toggle Autoplay Loop">
+                                    <span>AutoPlay</span>
+                                </button>
+                            </div>
+
+                            <!-- Giggle Me command button -->
+                            <button class="btn-sys btn-sys-primary" id="btn-fetch" aria-label="Fetch a new joke">
+                                <div class="loading-spinner" id="btn-spinner" style="display: none; border-top-color: #000; border-width: 1.5px; width: 12px; height: 12px;" aria-hidden="true"></div>
+                                <span id="btn-text" style="font-weight: bold;">Giggle Me!</span>
+                            </button>
+                        </section>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Bottom Status Bar -->
+            <footer class="status-bar" aria-label="Status readout">
+                <div class="status-section" id="status-main">For Help, press Giggle Me!</div>
+                <div class="status-section" id="status-safemode" style="color: #008000; font-weight: bold;">SafeMode: ON</div>
+                <div class="status-section" id="footer-favorites-info" style="cursor: pointer; text-decoration: underline;" title="Click to view drawer">0 bookmarks</div>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Outlook Express-style Favorites Sidebar Drawer -->
+    <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+    <aside class="fav-panel win-outset" id="fav-panel" aria-labelledby="fav-panel-title" aria-modal="true" role="dialog">
+        <div class="title-bar" style="margin: 2px 2px 0 2px;">
+            <div class="title-bar-text">
+                <!-- Folder Icon SVG -->
+                <svg width="14" height="12" viewBox="0 0 24 24" fill="#ffdf00" stroke="#000000" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                <span id="fav-panel-title">Saved Favorites - Outlook Express</span>
+            </div>
+            <button class="fav-close" id="btn-close-favorites" aria-label="Close bookmarks window">X</button>
+        </div>
+        
+        <div class="fav-body win-inset" id="fav-list-container" tabindex="0">
+            <!-- Dynamic bookmarks inbox rows will load here -->
+        </div>
+    </aside>
+
+    <!-- System Alerts Dialog Popup stack -->
+    <div class="toast-stack" id="toast-stack" aria-live="assertive"></div>
+
+    <!-- Application Script -->
+    <script src="app.js"></script>
+</body>
+</html>
